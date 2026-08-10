@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Media Player</title>
+    <title>StreamHub Ultimate Media Player</title>
     <style>
         :root {
             --bg-color: #141414;
@@ -26,7 +26,7 @@
             overflow-x: hidden;
         }
 
-        /* Header & Navigation */
+        /* Header Layout */
         header {
             display: flex;
             justify-content: space-between;
@@ -59,7 +59,7 @@
             padding: 10px 15px;
             border-radius: 4px;
             outline: none;
-            width: 250px;
+            width: 280px;
             transition: border-color 0.3s;
         }
 
@@ -67,21 +67,7 @@
             border-color: var(--accent-color);
         }
 
-        .nav-btn {
-            background: var(--card-bg);
-            color: var(--text-color);
-            border: 1px solid #444;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .nav-btn:hover {
-            background: #333;
-        }
-
-        /* Main Content Layout */
+        /* Main Content */
         main {
             padding: 20px 40px;
         }
@@ -99,14 +85,13 @@
             margin-bottom: 40px;
         }
 
-        /* Media Cards */
+        /* Poster Cards */
         .card {
             background-color: var(--card-bg);
             border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
-            position: relative;
         }
 
         .card:hover {
@@ -220,39 +205,19 @@
             border-color: var(--accent-color);
         }
 
-        /* Config Modal */
-        #config-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0,0,0,0.85);
-            z-index: 2000;
-            justify-content: center;
+        .ep-controls {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
             align-items: center;
         }
 
-        .config-box {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 8px;
-            width: 400px;
-            max-width: 90%;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .config-box button {
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 10px;
+        .ep-controls select {
+            background: #2a2a2a;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 6px;
             border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -262,7 +227,6 @@
         <div class="logo">StreamHub</div>
         <div class="controls">
             <input type="text" id="search-input" placeholder="Search movies or TV shows...">
-            <button class="nav-btn" onclick="openConfig()">API Key</button>
         </div>
     </header>
 
@@ -271,7 +235,7 @@
         <div class="grid" id="media-grid"></div>
     </main>
 
-    <!-- Video Player Modal -->
+    <!-- Video Player Overlay -->
     <div id="player-modal">
         <div class="modal-header">
             <div class="modal-title" id="player-media-title">Playing Media</div>
@@ -281,44 +245,35 @@
             <iframe id="video-frame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
         </div>
         <div class="server-controls">
-            <span style="font-size: 0.85rem; color: var(--text-dim);">Select Stream Source:</span>
-            <button class="server-btn active" onclick="switchSource('febbox')">FebBox Engine</button>
-            <button class="server-btn" onclick="switchSource('vidsrc')">VidSrc</button>
-            <button class="server-btn" onclick="switchSource('vidlink')">VidLink</button>
-            <button class="server-btn" onclick="switchSource('2embed')">2Embed</button>
-        </div>
-    </div>
+            <span style="font-size: 0.85rem; color: var(--text-dim);">Source:</span>
+            <button class="server-btn active" id="btn-vidking" onclick="switchSource('vidking')">VidKing Engine</button>
+            <button class="server-btn" id="btn-febbox" onclick="switchSource('febbox')">FebBox Direct</button>
 
-    <!-- API Key Input Modal -->
-    <div id="config-modal">
-        <div class="config-box">
-            <h3>Enter TMDb API Key</h3>
-            <p style="font-size: 0.85rem; color: var(--text-dim);">Get a free key at themoviedb.org</p>
-            <input type="text" id="tmdb-key-input" placeholder="Paste v3 API Key here">
-            <button onclick="saveApiKey()">Save Key</button>
+            <div class="ep-controls" id="tv-controls" style="display: none;">
+                <label style="font-size: 0.85rem;">Season:</label>
+                <select id="season-select" onchange="updateEpisodeSelector()"></select>
+                <label style="font-size: 0.85rem;">Episode:</label>
+                <select id="episode-select" onchange="reloadPlayer()"></select>
+            </div>
         </div>
     </div>
 
     <script>
-        let apiKey = localStorage.getItem('TMDB_API_KEY') || '';
-        let currentMedia = { id: null, type: null, title: '' };
+        const TMDB_API_KEY = "41cd097c8beb5d6582f7ab6f11180b6d";
+        const FEBBOX_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3ODYzMDc4NjQsIm5iZiI6MTc4NjMwNzg2NCwiZXhwIjoxODE3NDExODg0LCJkYXRhIjp7InVpZCI6MjI4Nzc5NCwidG9rZW4iOiJjYjFiYTY0MzViNGQ2MjRlNTFiNzVjNTA5NzEzMTEwYSJ9fQ.LN7HOupB4rwFnoxEVcsvmnw1QTqmxdqjroMAUevl2_g";
+
+        let currentMedia = { id: null, type: null, title: '', season: 1, episode: 1 };
+        let activeSource = 'vidking';
 
         const mediaGrid = document.getElementById('media-grid');
         const gridTitle = document.getElementById('grid-title');
         const searchInput = document.getElementById('search-input');
         const playerModal = document.getElementById('player-modal');
-        const configModal = document.getElementById('config-modal');
+        const tvControls = document.getElementById('tv-controls');
 
-        // Check for API key on launch
-        window.addEventListener('DOMContentLoaded', () => {
-            if (!apiKey) {
-                openConfig();
-            } else {
-                fetchTrending();
-            }
-        });
+        window.addEventListener('DOMContentLoaded', fetchTrending);
 
-        // Search Listener with Debounce
+        // Live Search with 400ms Debounce
         let searchTimeout = null;
         searchInput.addEventListener('input', (e) => {
             clearTimeout(searchTimeout);
@@ -332,13 +287,13 @@
 
         async function fetchTrending() {
             gridTitle.innerText = "Trending Content";
-            const url = `https://api.themoviedb.org/3/trending/all/week?api_key=${apiKey}`;
+            const url = `https://api.themoviedb.org/3/trending/all/week?api_key=${TMDB_API_KEY}`;
             await loadMediaData(url);
         }
 
         async function executeSearch(query) {
             gridTitle.innerText = `Search Results for "${query}"`;
-            const url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
+            const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`;
             await loadMediaData(url);
         }
 
@@ -357,7 +312,7 @@
         function renderGrid(items) {
             mediaGrid.innerHTML = '';
             items.forEach(item => {
-                if (!item.poster_path) return; // Skip items without artwork
+                if (!item.poster_path) return;
 
                 const isMovie = item.media_type === 'movie' || item.title;
                 const title = isMovie ? item.title : item.name;
@@ -377,47 +332,94 @@
             });
         }
 
-        // Streaming Embed Engine Logic
-        function launchPlayer(id, type, title) {
-            currentMedia = { id, type, title };
+        async function launchPlayer(id, type, title) {
+            currentMedia = { id, type, title, season: 1, episode: 1 };
             document.getElementById('player-media-title').innerText = title;
-            switchSource('febbox'); // Default to FebBox provider
+
+            if (type === 'tv') {
+                tvControls.style.display = 'flex';
+                await setupTvSelectors(id);
+            } else {
+                tvControls.style.display = 'none';
+            }
+
+            switchSource('vidking');
             playerModal.style.display = 'flex';
         }
 
-        function switchSource(provider) {
-            const iframe = document.getElementById('video-frame');
-            const { id, type } = currentMedia;
+        async function setupTvSelectors(tmdbId) {
+            try {
+                const res = await fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${TMDB_API_KEY}`);
+                const data = await res.json();
+                const seasonSelect = document.getElementById('season-select');
+                seasonSelect.innerHTML = '';
 
-            // Highlight active button
-            document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
-            event?.target?.classList.add('active');
+                data.seasons.forEach(s => {
+                    if (s.season_number > 0) {
+                        const opt = document.createElement('option');
+                        opt.value = s.season_number;
+                        opt.innerText = `Season ${s.season_number}`;
+                        seasonSelect.appendChild(opt);
+                    }
+                });
+
+                updateEpisodeSelector();
+            } catch (err) {
+                console.error("Failed to fetch season details:", err);
+            }
+        }
+
+        async function updateEpisodeSelector() {
+            const seasonNum = document.getElementById('season-select').value || 1;
+            currentMedia.season = seasonNum;
+            
+            try {
+                const res = await fetch(`https://api.themoviedb.org/3/tv/${currentMedia.id}/season/${seasonNum}?api_key=${TMDB_API_KEY}`);
+                const data = await res.json();
+                const epSelect = document.getElementById('episode-select');
+                epSelect.innerHTML = '';
+
+                data.episodes.forEach(ep => {
+                    const opt = document.createElement('option');
+                    opt.value = ep.episode_number;
+                    opt.innerText = `Ep ${ep.episode_number}: ${ep.name}`;
+                    epSelect.appendChild(opt);
+                });
+
+                currentMedia.episode = 1;
+                reloadPlayer();
+            } catch (err) {
+                console.error("Failed to fetch episode details:", err);
+            }
+        }
+
+        function reloadPlayer() {
+            if (currentMedia.type === 'tv') {
+                currentMedia.season = document.getElementById('season-select').value;
+                currentMedia.episode = document.getElementById('episode-select').value;
+            }
+            switchSource(activeSource);
+        }
+
+        function switchSource(provider) {
+            activeSource = provider;
+            const iframe = document.getElementById('video-frame');
+            const { id, type, season, episode } = currentMedia;
+
+            document.getElementById('btn-vidking').classList.toggle('active', provider === 'vidking');
+            document.getElementById('btn-febbox').classList.toggle('active', provider === 'febbox');
 
             let embedUrl = '';
-            
-            // Stream URL Resolvers
-            switch(provider) {
-                case 'febbox':
-                    // Embed integration utilizing FebBox share extraction endpoints
-                    embedUrl = type === 'movie' 
-                        ? `https://www.febbox.com/share/${id}` 
-                        : `https://www.febbox.com/share/${id}`;
-                    break;
-                case 'vidsrc':
-                    embedUrl = type === 'movie'
-                        ? `https://vidsrc.to/embed/movie/${id}`
-                        : `https://vidsrc.to/embed/tv/${id}`;
-                    break;
-                case 'vidlink':
-                    embedUrl = type === 'movie'
-                        ? `https://vidlink.pro/movie/${id}`
-                        : `https://vidlink.pro/tv/${id}`;
-                    break;
-                case '2embed':
-                    embedUrl = type === 'movie'
-                        ? `https://www.2embed.cc/embed/${id}`
-                        : `https://www.2embed.cc/embedtv/${id}`;
-                    break;
+
+            if (provider === 'vidking') {
+                // VidKing Integration with URL options matching requirements
+                const params = `color=e50914&autoPlay=true&nextEpisode=true&episodeSelector=true`;
+                embedUrl = type === 'movie'
+                    ? `https://www.vidking.net/embed/movie/${id}?${params}`
+                    : `https://www.vidking.net/embed/tv/${id}/${season}/${episode}?${params}`;
+            } else if (provider === 'febbox') {
+                // FebBox stream resolution endpoint passing bearer token
+                embedUrl = `https://www.febbox.com/share/${id}?token=${FEBBOX_TOKEN}`;
             }
 
             iframe.src = embedUrl;
@@ -426,22 +428,6 @@
         function closePlayer() {
             document.getElementById('video-frame').src = '';
             playerModal.style.display = 'none';
-        }
-
-        // API Key Management
-        function openConfig() {
-            document.getElementById('tmdb-key-input').value = apiKey;
-            configModal.style.display = 'flex';
-        }
-
-        function saveApiKey() {
-            const inputVal = document.getElementById('tmdb-key-input').value.trim();
-            if (inputVal) {
-                apiKey = inputVal;
-                localStorage.setItem('TMDB_API_KEY', apiKey);
-                configModal.style.display = 'none';
-                fetchTrending();
-            }
         }
     </script>
 </body>
