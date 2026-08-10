@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Media Player</title>
+    <style>
+        :root {
+            --bg-color: #141414;
+            --card-bg: #1f1f1f;
+            --accent-color: #e50914;
+            --text-color: #ffffff;
+            --text-dim: #aaaaaa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Header & Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        input[type="text"] {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid #444;
+            color: var(--text-color);
+            padding: 10px 15px;
+            border-radius: 4px;
+            outline: none;
+            width: 250px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-color);
+        }
+
+        .nav-btn {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid #444;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #333;
+        }
+
+        /* Main Content Layout */
+        main {
+            padding: 20px 40px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        /* Media Cards */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+        }
+
+        .card img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-info {
+            padding: 10px;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-type {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Player Overlay Modal */
+        #player-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-header {
+            width: 90%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .player-container {
+            width: 90%;
+            max-width: 1200px;
+            height: 70vh;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .server-controls {
+            width: 90%;
+            max-width: 1200px;
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .server-btn {
+            background: #2a2a2a;
+            color: #ccc;
+            border: 1px solid #444;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .server-btn.active {
+            background: var(--accent-color);
+            color: #fff;
+            border-color: var(--accent-color);
+        }
+
+        /* Config Modal */
+        #config-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .config-box {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .config-box button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">StreamHub</div>
+        <div class="controls">
+            <input type="text" id="search-input" placeholder="Search movies or TV shows...">
+            <button class="nav-btn" onclick="openConfig()">API Key</button>
+        </div>
+    </header>
+
+    <main>
+        <h2 class="section-title" id="grid-title">Trending Content</h2>
+        <div class="grid" id="media-grid"></div>
+    </main>
+
+    <!-- Video Player Modal -->
+    <div id="player-modal">
+        <div class="modal-header">
+            <div class="modal-title" id="player-media-title">Playing Media</div>
+            <button class="close-btn" onclick="closePlayer()">&times;</button>
+        </div>
+        <div class="player-container">
+            <iframe id="video-frame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+        </div>
+        <div class="server-controls">
+            <span style="font-size: 0.85rem; color: var(--text-dim);">Select Stream Source:</span>
+            <button class="server-btn active" onclick="switchSource('febbox')">FebBox Engine</button>
+            <button class="server-btn" onclick="switchSource('vidsrc')">VidSrc</button>
+            <button class="server-btn" onclick="switchSource('vidlink')">VidLink</button>
+            <button class="server-btn" onclick="switchSource('2embed')">2Embed</button>
+        </div>
+    </div>
+
+    <!-- API Key Input Modal -->
+    <div id="config-modal">
+        <div class="config-box">
+            <h3>Enter TMDb API Key</h3>
+            <p style="font-size: 0.85rem; color: var(--text-dim);">Get a free key at themoviedb.org</p>
+            <input type="text" id="tmdb-key-input" placeholder="Paste v3 API Key here">
+            <button onclick="saveApiKey()">Save Key</button>
+        </div>
+    </div>
+
+    <script>
+        let apiKey = localStorage.getItem('TMDB_API_KEY') || '';
+        let currentMedia = { id: null, type: null, title: '' };
+
+        const mediaGrid = document.getElementById('media-grid');
+        const gridTitle = document.getElementById('grid-title');
+        const searchInput = document.getElementById('search-input');
+        const playerModal = document.getElementById('player-modal');
+        const configModal = document.getElementById('config-modal');
+
+        // Check for API key on launch
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!apiKey) {
+                openConfig();
+            } else {
+                fetchTrending();
+            }
+        });
+
+        // Search Listener with Debounce
+        let searchTimeout = null;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            if (query.length > 2) {
+                searchTimeout = setTimeout(() => executeSearch(query), 400);
+            } else if (query.length === 0) {
+                fetchTrending();
+            }
+        });
+
+        async function fetchTrending() {
+            gridTitle.innerText = "Trending Content";
+            const url = `https://api.themoviedb.org/3/trending/all/week?api_key=${apiKey}`;
+            await loadMediaData(url);
+        }
+
+        async function executeSearch(query) {
+            gridTitle.innerText = `Search Results for "${query}"`;
+            const url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
+            await loadMediaData(url);
+        }
+
+        async function loadMediaData(url) {
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.results) {
+                    renderGrid(data.results);
+                }
+            } catch (err) {
+                console.error("Failed to load content:", err);
+            }
+        }
+
+        function renderGrid(items) {
+            mediaGrid.innerHTML = '';
+            items.forEach(item => {
+                if (!item.poster_path) return; // Skip items without artwork
+
+                const isMovie = item.media_type === 'movie' || item.title;
+                const title = isMovie ? item.title : item.name;
+                const mediaType = isMovie ? 'movie' : 'tv';
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="${title}">
+                    <div class="card-info">
+                        <div class="card-title">${title}</div>
+                        <div class="card-type">${mediaType}</div>
+                    </div>
+                `;
+                card.onclick = () => launchPlayer(item.id, mediaType, title);
+                mediaGrid.appendChild(card);
+            });
+        }
+
+        // Streaming Embed Engine Logic
+        function launchPlayer(id, type, title) {
+            currentMedia = { id, type, title };
+            document.getElementById('player-media-title').innerText = title;
+            switchSource('febbox'); // Default to FebBox provider
+            playerModal.style.display = 'flex';
+        }
+
+        function switchSource(provider) {
+            const iframe = document.getElementById('video-frame');
+            const { id, type } = currentMedia;
+
+            // Highlight active button
+            document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
+            event?.target?.classList.add('active');
+
+            let embedUrl = '';
+            
+            // Stream URL Resolvers
+            switch(provider) {
+                case 'febbox':
+                    // Embed integration utilizing FebBox share extraction endpoints
+                    embedUrl = type === 'movie' 
+                        ? `https://www.febbox.com/share/${id}` 
+                        : `https://www.febbox.com/share/${id}`;
+                    break;
+                case 'vidsrc':
+                    embedUrl = type === 'movie'
+                        ? `https://vidsrc.to/embed/movie/${id}`
+                        : `https://vidsrc.to/embed/tv/${id}`;
+                    break;
+                case 'vidlink':
+                    embedUrl = type === 'movie'
+                        ? `https://vidlink.pro/movie/${id}`
+                        : `https://vidlink.pro/tv/${id}`;
+                    break;
+                case '2embed':
+                    embedUrl = type === 'movie'
+                        ? `https://www.2embed.cc/embed/${id}`
+                        : `https://www.2embed.cc/embedtv/${id}`;
+                    break;
+            }
+
+            iframe.src = embedUrl;
+        }
+
+        function closePlayer() {
+            document.getElementById('video-frame').src = '';
+            playerModal.style.display = 'none';
+        }
+
+        // API Key Management
+        function openConfig() {
+            document.getElementById('tmdb-key-input').value = apiKey;
+            configModal.style.display = 'flex';
+        }
+
+        function saveApiKey() {
+            const inputVal = document.getElementById('tmdb-key-input').value.trim();
+            if (inputVal) {
+                apiKey = inputVal;
+                localStorage.setItem('TMDB_API_KEY', apiKey);
+                configModal.style.display = 'none';
+                fetchTrending();
+            }
+        }
+    </script>
+</body>
+</html>
