@@ -73,4 +73,85 @@ const CONFIG = {
             quality: '1080p',
             tier: 3,
             icon: 'fa-fire',
-            getUrl: (m) => m.type === 'movie
+            getUrl: (m) => m.type === 'movie'
+                ? `https://embed.smashystream.com/playere.php?tmdb=${m.id}`
+                : `https://embed.smashystream.com/playere.php?tmdb=${m.id}&season=${m.season}&episode=${m.episode}`
+        },
+        {
+            id: 'superembed',
+            name: 'SuperEmbed',
+            quality: '720p',
+            tier: 3,
+            icon: 'fa-rocket',
+            getUrl: (m) => `https://multiembed.mov/directstream.php?video_id=${m.id}&tmdb=1${m.type === 'tv' ? `&s=${m.season}&e=${m.episode}` : ''}`
+        },
+        {
+            id: 'vidsrcicu',
+            name: 'VidSrc.icu',
+            quality: '1080p',
+            tier: 4,
+            icon: 'fa-circle-play',
+            getUrl: (m) => m.type === 'movie'
+                ? `https://vidsrc.icu/embed/movie/${m.id}`
+                : `https://vidsrc.icu/embed/tv/${m.id}/${m.season}/${m.episode}`
+        },
+        {
+            id: 'vidlink',
+            name: 'VidLink',
+            quality: '720p',
+            tier: 4,
+            icon: 'fa-link',
+            getUrl: (m) => m.type === 'movie'
+                ? `https://vidlink.pro/movie/${m.id}`
+                : `https://vidlink.pro/tv/${m.id}/${m.season}/${m.episode}`
+        }
+    ],
+    
+    // App Settings
+    DEFAULT_SETTINGS: {
+        theme: 'dark',
+        viewMode: 'grid',
+        autoplay: true,
+        defaultServer: 'vidsrc',
+        language: 'en'
+    },
+    
+    // Storage Keys
+    STORAGE_KEYS: {
+        AUTH: 'streamhub_auth',
+        USER_DATA: 'streamhub_user_data',
+        SETTINGS: 'streamhub_settings',
+        SESSION: 'streamhub_session'
+    }
+};
+
+// ==================== STATE MANAGEMENT ====================
+const AppState = {
+    currentUser: null,
+    isAuthenticated: false,
+    activeServer: 'vidsrc',
+    currentMedia: null,
+    currentRoute: 'home',
+    currentPage: 1,
+    viewMode: 'grid',
+    isLoading: false,
+    
+    setUser(user) {
+        this.currentUser = user;
+        this.isAuthenticated = !!user && !user.isGuest;
+        this.triggerEvent('userChanged', user);
+    },
+    
+    setRoute(route) {
+        this.currentRoute = route;
+        this.triggerEvent('routeChanged', route);
+    },
+    
+    triggerEvent(eventName, data) {
+        window.dispatchEvent(new CustomEvent(eventName, { detail: data }));
+    }
+};
+
+// Make config globally available
+window.CONFIG = CONFIG;
+window.AppState = AppState;
