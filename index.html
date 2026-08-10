@@ -3,738 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamHub Pro - Ultimate Cinema Platform</title>
+    <meta name="description" content="StreamHub Pro - Ultimate Streaming Platform">
+    <title>StreamHub Pro - Cinema Platform</title>
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --bg-base: #0a0e17;
-            --surface-1: #131a25;
-            --surface-2: #1c2535;
-            --surface-3: #253045;
-            --surface-hover: #2a3648;
-            --accent-primary: #e50914;
-            --accent-primary-hover: #ff1e27;
-            --accent-secondary: #3b82f6;
-            --accent-success: #10b981;
-            --accent-warning: #f59e0b;
-            --accent-glow: rgba(229, 9, 20, 0.4);
-            --text-main: #ffffff;
-            --text-secondary: #d4d9e6;
-            --text-muted: #8892a8;
-            --border-color: rgba(255, 255, 255, 0.06);
-            --radius-xs: 4px;
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 20px;
-            --radius-xl: 28px;
-            --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.6);
-            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.8);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            font-family: var(--font-stack);
-            min-height: 100vh;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* Auth Styles */
-        .auth-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(20px);
-            z-index: 5000;
-            align-items: center;
-            justify-content: center;
-        }
-        .auth-overlay.active { display: flex; }
-
-        .auth-container {
-            background: var(--surface-1);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 40px;
-            width: 100%;
-            max-width: 440px;
-            box-shadow: var(--shadow-lg);
-            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .auth-tabs {
-            display: flex;
-            gap: 0;
-            margin-bottom: 32px;
-            background: var(--surface-2);
-            border-radius: var(--radius-sm);
-            padding: 4px;
-        }
-        .auth-tab {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            transition: all var(--transition-fast);
-            border: none;
-            background: none;
-            font-family: var(--font-stack);
-        }
-        .auth-tab.active {
-            background: var(--accent-primary);
-            color: #fff;
-        }
-        .auth-tab:hover:not(.active) {
-            color: var(--text-main);
-            background: var(--surface-3);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--surface-2);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            border-radius: var(--radius-sm);
-            font-size: 0.9rem;
-            font-family: var(--font-stack);
-            transition: all var(--transition-fast);
-            outline: none;
-        }
-        .form-input:focus {
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-        .form-input::placeholder {
-            color: var(--text-muted);
-        }
-        .password-field {
-            position: relative;
-        }
-        .password-toggle {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 4px;
-        }
-        .password-toggle:hover {
-            color: var(--text-main);
-        }
-
-        .auth-btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--accent-primary);
-            color: #fff;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            font-family: var(--font-stack);
-            margin-top: 8px;
-        }
-        .auth-btn:hover {
-            background: var(--accent-primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px var(--accent-glow);
-        }
-        .auth-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .auth-error {
-            background: rgba(229, 9, 20, 0.15);
-            border: 1px solid var(--accent-primary);
-            color: var(--accent-primary);
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 0.8rem;
-            margin-bottom: 16px;
-            display: none;
-            font-weight: 600;
-        }
-        .auth-error.visible { display: block; }
-
-        .auth-success {
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid var(--accent-success);
-            color: var(--accent-success);
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 0.8rem;
-            margin-bottom: 16px;
-            display: none;
-            font-weight: 600;
-        }
-        .auth-success.visible { display: block; }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin: 20px 0;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border-color);
-        }
-
-        /* Navigation - Enhanced */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 32px;
-            background: rgba(10, 14, 23, 0.92);
-            backdrop-filter: blur(24px) saturate(180%);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            border-bottom: 1px solid var(--border-color);
-            transition: all var(--transition-smooth);
-            gap: 20px;
-        }
-        .brand-logo {
-            font-size: 1.5rem;
-            font-weight: 900;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #e50914, #ff4444);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .nav-links {
-            display: flex;
-            gap: 4px;
-            list-style: none;
-            flex-wrap: wrap;
-        }
-        .nav-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.85rem;
-            padding: 8px 14px;
-            border-radius: var(--radius-sm);
-            transition: all var(--transition-fast);
-            white-space: nowrap;
-        }
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: var(--text-main);
-            background: var(--surface-2);
-        }
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-        }
-        .search-container {
-            position: relative;
-        }
-        .search-container input {
-            background: var(--surface-2);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px 16px 10px 40px;
-            border-radius: 30px;
-            width: 200px;
-            font-size: 0.85rem;
-            font-family: var(--font-stack);
-            transition: all var(--transition-smooth);
-            outline: none;
-        }
-        .search-container input:focus {
-            width: 280px;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-        .search-container .search-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-        .icon-btn {
-            background: var(--surface-1);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            position: relative;
-        }
-        .icon-btn:hover {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-            transform: translateY(-2px);
-        }
-        .user-chip {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--surface-1);
-            border: 1px solid var(--border-color);
-            padding: 6px 16px 6px 8px;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            white-space: nowrap;
-        }
-        .user-chip:hover {
-            border-color: var(--accent-primary);
-        }
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #e50914, #3b82f6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 0.85rem;
-        }
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: var(--radius-xl);
-            font-weight: 700;
-            font-size: 0.85rem;
-            border: none;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            font-family: var(--font-stack);
-            white-space: nowrap;
-        }
-        .btn-primary {
-            background: var(--accent-primary);
-            color: #fff;
-            box-shadow: 0 4px 16px var(--accent-glow);
-        }
-        .btn-primary:hover {
-            background: var(--accent-primary-hover);
-            transform: translateY(-2px);
-        }
-        .btn-outline {
-            background: transparent;
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-        }
-        .btn-outline:hover {
-            border-color: var(--accent-primary);
-            background: var(--surface-2);
-        }
-
-        /* Hero Section */
-        .hero {
-            position: relative;
-            height: 70vh;
-            min-height: 450px;
-            display: flex;
-            align-items: flex-end;
-            padding: 80px 48px 60px;
-            margin-top: 64px;
-            background-size: cover;
-            background-position: center top;
-            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-            overflow: hidden;
-        }
-        .hero-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, transparent 20%, rgba(10,14,23,0.4) 45%, rgba(10,14,23,0.85) 75%, var(--bg-base) 95%),
-                        linear-gradient(90deg, var(--bg-base) 0%, rgba(10,14,23,0.6) 35%, transparent 65%);
-        }
-        .hero-content {
-            position: relative;
-            z-index: 10;
-            max-width: 600px;
-        }
-        .hero-title {
-            font-size: 3rem;
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 16px;
-            text-shadow: 0 4px 30px rgba(0,0,0,0.9);
-        }
-        .hero-meta {
-            display: flex;
-            gap: 16px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-        .hero-overview {
-            font-size: 0.9rem;
-            color: #c0c8d8;
-            line-height: 1.6;
-            margin-bottom: 24px;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* Main Content */
-        main {
-            padding: 32px 48px;
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-        }
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .section-title {
-            font-size: 1.3rem;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .media-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            background: var(--surface-1);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            cursor: pointer;
-            border: 1px solid var(--border-color);
-            transition: all var(--transition-fast);
-            display: flex;
-            flex-direction: column;
-        }
-        .card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(255,255,255,0.2);
-            box-shadow: var(--shadow-lg);
-        }
-        .card-poster {
-            position: relative;
-            aspect-ratio: 2/3;
-            overflow: hidden;
-            background: var(--surface-2);
-        }
-        .card-poster img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        .card:hover .card-poster img {
-            transform: scale(1.08);
-        }
-        .card-fav {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(8px);
-            border: none;
-            color: #fff;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 5;
-            font-size: 0.8rem;
-            transition: all var(--transition-fast);
-        }
-        .card-fav.active {
-            color: #f5c518;
-            background: rgba(245,197,24,0.2);
-        }
-        .card-body {
-            padding: 14px;
-            flex: 1;
-        }
-        .card-title {
-            font-weight: 700;
-            font-size: 0.88rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 6px;
-        }
-        .card-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        /* Player Modal */
-        .player-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(2,3,8,0.97);
-            backdrop-filter: blur(24px);
-            z-index: 2000;
-            flex-direction: column;
-        }
-        .player-modal.active { display: flex; }
-        .player-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 32px;
-            background: var(--surface-1);
-            border-bottom: 1px solid var(--border-color);
-        }
-        .player-body {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        .player-main {
-            flex: 3;
-            background: #000;
-            position: relative;
-        }
-        .player-main iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .player-sidebar {
-            flex: 1;
-            max-width: 380px;
-            background: var(--surface-1);
-            border-left: 1px solid var(--border-color);
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .server-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-        .server-card {
-            background: var(--surface-2);
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            text-align: center;
-            font-size: 0.78rem;
-            font-weight: 700;
-            transition: all var(--transition-fast);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .server-card:hover,
-        .server-card.active {
-            border-color: var(--accent-primary);
-            background: rgba(229,9,20,0.15);
-        }
-        .server-quality {
-            font-size: 0.6rem;
-            padding: 2px 6px;
-            border-radius: 3px;
-            background: var(--accent-success);
-            color: #fff;
-        }
-        .episode-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .episode-item {
-            display: flex;
-            gap: 10px;
-            background: var(--surface-2);
-            border: 1px solid var(--border-color);
-            padding: 8px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            align-items: center;
-        }
-        .episode-item:hover,
-        .episode-item.active {
-            border-color: var(--accent-secondary);
-            background: rgba(59,130,246,0.15);
-        }
-
-        /* Toast */
-        .toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 9999;
-        }
-        .toast {
-            background: var(--surface-2);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 14px 20px;
-            border-radius: var(--radius-md);
-            font-size: 0.85rem;
-            font-weight: 600;
-            box-shadow: var(--shadow-lg);
-            animation: slideIn 0.3s ease;
-            max-width: 380px;
-        }
-        @keyframes slideIn {
-            from { transform: translateX(120%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* User Menu Dropdown */
-        .user-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: var(--surface-1);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 8px;
-            min-width: 200px;
-            box-shadow: var(--shadow-lg);
-            display: none;
-            z-index: 1100;
-        }
-        .user-dropdown.active { display: block; }
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            color: var(--text-main);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            border: none;
-            background: none;
-            width: 100%;
-            font-family: var(--font-stack);
-            transition: all var(--transition-fast);
-        }
-        .dropdown-item:hover {
-            background: var(--surface-2);
-        }
-        .dropdown-item.danger {
-            color: var(--accent-primary);
-        }
-
-        /* Modal */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(12px);
-            z-index: 2500;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-box {
-            background: var(--surface-1);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 32px;
-            width: 100%;
-            max-width: 480px;
-            box-shadow: var(--shadow-lg);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            nav { padding: 10px 16px; }
-            .nav-links { display: none; }
-            .hero { height: 50vh; padding: 40px 20px 30px; }
-            .hero-title { font-size: 2rem; }
-            main { padding: 20px; }
-            .media-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-            .player-body { flex-direction: column; }
-            .player-sidebar { max-width: 100%; max-height: 300px; }
-        }
-    </style>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
 </head>
 <body>
     <!-- Toast Container -->
@@ -743,147 +26,320 @@
     <!-- Auth Overlay -->
     <div class="auth-overlay" id="auth-overlay">
         <div class="auth-container">
-            <div class="auth-tabs">
-                <button class="auth-tab active" onclick="Auth.switchTab('login')">Sign In</button>
-                <button class="auth-tab" onclick="Auth.switchTab('register')">Create Account</button>
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fa-solid fa-play-circle"></i> STREAMHUB
+                </div>
+                <p class="auth-subtitle">Sign in to access your personalized streaming experience</p>
             </div>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login" onclick="Auth.switchTab('login')">
+                    <i class="fa-solid fa-right-to-bracket"></i> Sign In
+                </button>
+                <button class="auth-tab" data-tab="register" onclick="Auth.switchTab('register')">
+                    <i class="fa-solid fa-user-plus"></i> Create Account
+                </button>
+            </div>
+            
             <div class="auth-error" id="auth-error"></div>
             <div class="auth-success" id="auth-success"></div>
-            <form id="auth-form" onsubmit="Auth.handleSubmit(event)">
+            
+            <form id="auth-form" onsubmit="Auth.handleSubmit(event)" novalidate>
                 <div class="form-group" id="name-group" style="display:none;">
-                    <label>Full Name</label>
-                    <input type="text" class="form-input" id="auth-name" placeholder="John Doe">
+                    <label for="auth-name">Full Name</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user input-icon"></i>
+                        <input type="text" class="form-input" id="auth-name" placeholder="John Doe" autocomplete="name">
+                    </div>
                 </div>
+                
                 <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" class="form-input" id="auth-email" placeholder="you@example.com" required>
+                    <label for="auth-email">Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-envelope input-icon"></i>
+                        <input type="email" class="form-input" id="auth-email" placeholder="you@example.com" required autocomplete="email">
+                    </div>
                 </div>
+                
                 <div class="form-group">
-                    <label>Password</label>
-                    <div class="password-field">
-                        <input type="password" class="form-input" id="auth-password" placeholder="Min. 8 characters" required minlength="8">
-                        <button type="button" class="password-toggle" onclick="Auth.togglePassword()">
+                    <label for="auth-password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" class="form-input" id="auth-password" placeholder="Min. 8 characters" required minlength="8" autocomplete="current-password">
+                        <button type="button" class="password-toggle" onclick="Auth.togglePassword()" tabindex="-1">
                             <i class="fa-solid fa-eye"></i>
                         </button>
                     </div>
+                    <div class="password-strength" id="password-strength" style="display:none;">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strength-fill"></div>
+                        </div>
+                        <span class="strength-text" id="strength-text"></span>
+                    </div>
                 </div>
+                
                 <div class="form-group" id="confirm-group" style="display:none;">
-                    <label>Confirm Password</label>
-                    <input type="password" class="form-input" id="auth-confirm" placeholder="Repeat password" minlength="8">
+                    <label for="auth-confirm">Confirm Password</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-check-double input-icon"></i>
+                        <input type="password" class="form-input" id="auth-confirm" placeholder="Repeat password" minlength="8" autocomplete="new-password">
+                    </div>
                 </div>
-                <button type="submit" class="auth-btn" id="auth-submit-btn">Sign In</button>
+                
+                <div class="form-options" id="remember-me-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="remember-me" checked>
+                        <span class="checkmark"></span>
+                        Remember me
+                    </label>
+                    <a href="#" class="forgot-password" onclick="Auth.forgotPassword()">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="auth-btn" id="auth-submit-btn">
+                    <i class="fa-solid fa-right-to-bracket"></i> Sign In
+                </button>
             </form>
-            <div class="divider">or continue with</div>
-            <button class="btn btn-outline" style="width:100%; justify-content:center;" onclick="Auth.guestLogin()">
-                <i class="fa-solid fa-user-secret"></i> Continue as Guest
-            </button>
+            
+            <div class="divider"><span>or continue with</span></div>
+            
+            <div class="social-login">
+                <button class="social-btn" onclick="Auth.guestLogin()" title="Continue as Guest">
+                    <i class="fa-solid fa-user-secret"></i> Guest Access
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Navigation -->
-    <nav>
-        <div style="display:flex; align-items:center; gap:24px;">
-            <a href="#" class="brand-logo" onclick="App.loadCategory('trending'); return false;">
-                <i class="fa-solid fa-play-circle"></i> STREAMHUB
-            </a>
-            <ul class="nav-links" id="nav-links">
-                <li><a href="#" class="active" onclick="App.loadCategory('trending')">Home</a></li>
-                <li><a href="#" onclick="App.loadCategory('movie')">Movies</a></li>
-                <li><a href="#" onclick="App.loadCategory('tv')">TV Shows</a></li>
-                <li><a href="#" onclick="App.showWatchlist()">Watchlist</a></li>
-            </ul>
-        </div>
-        <div class="nav-right">
-            <div class="search-container">
-                <i class="fa-solid fa-search search-icon"></i>
-                <input type="text" id="search-input" placeholder="Search...">
-            </div>
-            <button class="icon-btn" onclick="App.toggleTheme()"><i class="fa-solid fa-palette"></i></button>
-            <div style="position:relative;" id="user-menu-container">
-                <button class="btn btn-outline" id="login-btn" onclick="Auth.showAuth()">
-                    <i class="fa-solid fa-right-to-bracket"></i> Sign In
+    <!-- Navigation Bar -->
+    <nav id="main-nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">
+                    <i class="fa-solid fa-bars"></i>
                 </button>
-                <div class="user-chip" id="user-chip" style="display:none;" onclick="App.toggleUserMenu()">
-                    <div class="user-avatar" id="nav-avatar">U</div>
-                    <span id="nav-username" style="font-size:0.85rem; font-weight:700;">User</span>
-                    <i class="fa-solid fa-chevron-down" style="font-size:0.6rem; color:var(--text-muted);"></i>
+                <a href="/" class="brand-logo" onclick="event.preventDefault(); Router.navigate('home')">
+                    <i class="fa-solid fa-play-circle"></i>
+                    <span>STREAMHUB</span>
+                </a>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="#home" class="active" data-route="home">🏠 Home</a></li>
+                    <li><a href="#movies" data-route="movies">🎬 Movies</a></li>
+                    <li><a href="#tv" data-route="tv">📺 TV Shows</a></li>
+                    <li><a href="#trending" data-route="trending">🔥 Trending</a></li>
+                    <li><a href="#watchlist" data-route="watchlist">📋 Watchlist</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-right">
+                <div class="search-container">
+                    <i class="fa-solid fa-search search-icon"></i>
+                    <input type="text" id="search-input" placeholder="Search movies, shows..." autocomplete="off">
+                    <button class="clear-search" id="clear-search" style="display:none;">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
                 </div>
-                <div class="user-dropdown" id="user-dropdown">
-                    <div class="dropdown-item" onclick="App.showProfile()">
-                        <i class="fa-solid fa-user"></i> My Profile
+                
+                <button class="icon-btn theme-toggle" onclick="UI.toggleTheme()" title="Toggle theme">
+                    <i class="fa-solid fa-palette"></i>
+                </button>
+                
+                <div class="user-menu-container" id="user-menu-container">
+                    <button class="btn btn-outline sign-in-btn" id="sign-in-btn" onclick="Auth.showAuth()">
+                        <i class="fa-solid fa-right-to-bracket"></i> Sign In
+                    </button>
+                    
+                    <div class="user-chip" id="user-chip" style="display:none;" onclick="UI.toggleUserMenu()">
+                        <div class="user-avatar" id="nav-avatar">U</div>
+                        <span class="user-name" id="nav-username">User</span>
+                        <i class="fa-solid fa-chevron-down"></i>
                     </div>
-                    <div class="dropdown-item" onclick="App.showWatchlist()">
-                        <i class="fa-solid fa-bookmark"></i> Watchlist
-                    </div>
-                    <div class="dropdown-item" onclick="StorageEngine.exportBackup()">
-                        <i class="fa-solid fa-download"></i> Export Data
-                    </div>
-                    <hr style="border-color:var(--border-color); margin:4px 0;">
-                    <div class="dropdown-item danger" onclick="Auth.logout()">
-                        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                    
+                    <div class="user-dropdown" id="user-dropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-avatar" id="dropdown-avatar">U</div>
+                            <div>
+                                <div class="dropdown-name" id="dropdown-name">User</div>
+                                <div class="dropdown-email" id="dropdown-email">user@email.com</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="UI.showProfile()">
+                            <i class="fa-solid fa-user"></i> My Profile
+                        </button>
+                        <button class="dropdown-item" onclick="Router.navigate('watchlist')">
+                            <i class="fa-solid fa-bookmark"></i> Watchlist
+                            <span class="badge" id="dropdown-watchlist-count">0</span>
+                        </button>
+                        <button class="dropdown-item" onclick="StorageManager.exportData()">
+                            <i class="fa-solid fa-download"></i> Export Data
+                        </button>
+                        <button class="dropdown-item" onclick="StorageManager.importData()">
+                            <i class="fa-solid fa-upload"></i> Import Data
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item danger" onclick="Auth.logout()">
+                            <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Hero -->
-    <section class="hero" id="hero-banner">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <h1 class="hero-title" id="hero-title">Featured Title</h1>
-            <div class="hero-meta">
-                <span style="background:#f5c518; color:#000; padding:3px 8px; border-radius:4px; font-weight:900;">⭐ <span id="hero-rating">8.5</span></span>
-                <span id="hero-year">2024</span>
-                <span id="hero-type">Movie</span>
+    <!-- Main Content Area -->
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section class="hero" id="hero-section">
+            <div class="hero-background" id="hero-background"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-badge" id="hero-badge">
+                    <i class="fa-solid fa-star"></i> Featured
+                </div>
+                <h1 class="hero-title" id="hero-title">Welcome to StreamHub</h1>
+                <div class="hero-meta">
+                    <span class="meta-item rating" id="hero-rating">⭐ 8.5</span>
+                    <span class="meta-item" id="hero-year">2024</span>
+                    <span class="meta-item" id="hero-type">Movie</span>
+                    <span class="meta-item" id="hero-runtime">120 min</span>
+                </div>
+                <p class="hero-description" id="hero-description">
+                    Discover thousands of movies and TV shows. Start streaming now with our advanced platform.
+                </p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary btn-lg" id="hero-play-btn">
+                        <i class="fa-solid fa-play"></i> Watch Now
+                    </button>
+                    <button class="btn btn-secondary btn-lg" id="hero-watchlist-btn">
+                        <i class="fa-solid fa-plus"></i> Add to Watchlist
+                    </button>
+                    <button class="btn btn-icon-only" id="hero-info-btn" title="More Info">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </button>
+                </div>
             </div>
-            <p class="hero-overview" id="hero-overview">Loading...</p>
-            <button class="btn btn-primary" id="hero-play-btn">
-                <i class="fa-solid fa-play"></i> Watch Now
-            </button>
-        </div>
-    </section>
+        </section>
 
-    <!-- Main Content -->
-    <main>
-        <div id="continue-section" style="display:none;">
+        <!-- Continue Watching -->
+        <section class="content-section" id="continue-section" style="display:none;">
             <div class="section-header">
-                <div class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Continue Watching</div>
-                <button class="btn btn-outline" style="padding:6px 14px; font-size:0.75rem;" onclick="StorageEngine.clearHistory()">Clear</button>
+                <h2 class="section-title">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Continue Watching
+                </h2>
+                <button class="btn btn-text" onclick="StorageManager.clearHistory()">
+                    <i class="fa-solid fa-trash"></i> Clear History
+                </button>
             </div>
             <div class="media-grid" id="continue-grid"></div>
-        </div>
-        <div>
+        </section>
+
+        <!-- Content Grid -->
+        <section class="content-section">
             <div class="section-header">
-                <div class="section-title" id="section-heading">Trending Now</div>
+                <h2 class="section-title" id="section-title">
+                    <i class="fa-solid fa-fire"></i> Trending Now
+                </h2>
+                <div class="section-controls">
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid" onclick="UI.setViewMode('grid')">
+                            <i class="fa-solid fa-grid-2"></i>
+                        </button>
+                        <button class="view-btn" data-view="compact" onclick="UI.setViewMode('compact')">
+                            <i class="fa-solid fa-table-cells"></i>
+                        </button>
+                        <button class="view-btn" data-view="list" onclick="UI.setViewMode('list')">
+                            <i class="fa-solid fa-list"></i>
+                        </button>
+                    </div>
+                    <select class="genre-filter" id="genre-filter" onchange="App.applyFilters()">
+                        <option value="">All Genres</option>
+                        <option value="28">Action</option>
+                        <option value="12">Adventure</option>
+                        <option value="35">Comedy</option>
+                        <option value="18">Drama</option>
+                        <option value="878">Sci-Fi</option>
+                        <option value="27">Horror</option>
+                        <option value="10749">Romance</option>
+                    </select>
+                </div>
             </div>
             <div class="media-grid" id="main-grid"></div>
-        </div>
+            <div class="loading-spinner" id="loading-spinner" style="display:none;">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <p>Loading content...</p>
+            </div>
+            <div class="pagination" id="pagination" style="display:none;">
+                <button class="btn btn-outline" id="prev-page" disabled>
+                    <i class="fa-solid fa-chevron-left"></i> Previous
+                </button>
+                <span id="page-info">Page 1</span>
+                <button class="btn btn-outline" id="next-page">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </section>
     </main>
 
-    <!-- Player Modal -->
+    <!-- Video Player Modal -->
     <div class="player-modal" id="player-modal">
-        <div class="player-nav">
-            <div>
-                <h3 id="player-title" style="font-size:1.1rem; font-weight:800;">Title</h3>
-                <span style="font-size:0.8rem; color:var(--text-muted);" id="player-sub">Movie</span>
-            </div>
-            <button class="btn btn-outline" onclick="Player.close()"><i class="fa-solid fa-xmark"></i> Close</button>
-        </div>
-        <div class="player-body">
-            <div class="player-main">
-                <iframe id="video-frame" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
-            </div>
-            <div class="player-sidebar">
-                <div>
-                    <label style="font-size:0.75rem; color:var(--text-muted); font-weight:800; text-transform:uppercase;">
-                        <i class="fa-solid fa-server"></i> Streaming Servers
-                    </label>
-                    <div class="server-grid" id="server-buttons"></div>
+        <div class="player-backdrop" onclick="Player.close()"></div>
+        <div class="player-container">
+            <div class="player-header">
+                <div class="player-info">
+                    <h3 id="player-title">Media Title</h3>
+                    <span id="player-meta">Movie • 2024</span>
                 </div>
-                <div id="tv-section" style="display:none;">
-                    <select id="season-select" style="width:100%; padding:10px; background:var(--surface-2); color:var(--text-main); border:1px solid var(--border-color); border-radius:var(--radius-sm); margin-bottom:12px; font-family:var(--font-stack);" onchange="Player.loadEpisodes()"></select>
-                    <div class="episode-list" id="episode-grid"></div>
+                <div class="player-actions">
+                    <button class="btn btn-icon-only" onclick="Player.toggleFullscreen()" title="Fullscreen">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+                    <button class="btn btn-icon-only" onclick="Player.close()" title="Close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="player-body">
+                <div class="player-main">
+                    <iframe id="video-frame" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
+                    <div class="player-controls" id="player-controls">
+                        <button class="control-btn" onclick="Player.previousServer()" title="Previous Server">
+                            <i class="fa-solid fa-backward-step"></i>
+                        </button>
+                        <button class="control-btn" onclick="Player.togglePiP()" title="Picture in Picture">
+                            <i class="fa-solid fa-clone"></i>
+                        </button>
+                        <button class="control-btn" onclick="Player.cycleSpeed()" title="Playback Speed">
+                            <span id="speed-indicator">1.0x</span>
+                        </button>
+                        <button class="control-btn" onclick="Player.reloadPlayer()" title="Reload">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
+                        <button class="control-btn" onclick="Player.nextServer()" title="Next Server">
+                            <i class="fa-solid fa-forward-step"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="player-sidebar">
+                    <div class="sidebar-section">
+                        <h4 class="sidebar-title">
+                            <i class="fa-solid fa-server"></i> Streaming Servers
+                        </h4>
+                        <div class="server-grid" id="server-grid"></div>
+                    </div>
+                    <div class="sidebar-section" id="tv-section" style="display:none;">
+                        <h4 class="sidebar-title">
+                            <i class="fa-solid fa-list-ol"></i> Episodes
+                        </h4>
+                        <select id="season-select" class="season-select" onchange="Player.loadEpisodes()"></select>
+                        <div class="episode-list" id="episode-list"></div>
+                    </div>
+                    <div class="sidebar-section" id="media-details" style="display:none;">
+                        <h4 class="sidebar-title">
+                            <i class="fa-solid fa-circle-info"></i> Details
+                        </h4>
+                        <div id="media-details-content"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -891,768 +347,47 @@
 
     <!-- Profile Modal -->
     <div class="modal-overlay" id="profile-modal">
-        <div class="modal-box" style="text-align:center;">
-            <h2 style="font-size:1.4rem; font-weight:900; margin-bottom:16px;">Account Settings</h2>
-            <div id="profile-info" style="margin-bottom:20px;"></div>
-            <button class="btn btn-outline" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="StorageEngine.exportBackup()">
-                <i class="fa-solid fa-download"></i> Export Watch Data
+        <div class="modal-box">
+            <button class="modal-close" onclick="UI.closeModal('profile-modal')">
+                <i class="fa-solid fa-xmark"></i>
             </button>
-            <button class="btn btn-outline" style="width:100%; justify-content:center; color:var(--accent-primary); border-color:var(--accent-primary);" onclick="Auth.logout()">
-                <i class="fa-solid fa-right-from-bracket"></i> Sign Out
-            </button>
-            <button class="btn btn-outline" style="width:100%; justify-content:center; margin-top:8px;" onclick="document.getElementById('profile-modal').classList.remove('active')">
-                Close
-            </button>
+            <div class="profile-content">
+                <div class="profile-avatar-large" id="profile-avatar">U</div>
+                <h2 id="profile-name">User Name</h2>
+                <p id="profile-email">user@email.com</p>
+                <p id="profile-member-since">Member since 2024</p>
+            </div>
+            <div class="profile-stats">
+                <div class="stat">
+                    <span class="stat-value" id="watchlist-count">0</span>
+                    <span class="stat-label">Watchlist</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="history-count">0</span>
+                    <span class="stat-label">Watched</span>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <button class="btn btn-outline btn-block" onclick="StorageManager.exportData()">
+                    <i class="fa-solid fa-download"></i> Export Data
+                </button>
+                <button class="btn btn-outline btn-block" onclick="Auth.logout()">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                </button>
+            </div>
         </div>
     </div>
 
-    <script>
-        // ==================== ENHANCED STREAMING SOURCES ====================
-        const STREAMING_SERVERS = [
-            // Tier 1 - Premium (Most Reliable)
-            { id: 'vidsrc', name: 'VidSrc PRO', quality: '4K', icon: 'fa-crown', tier: 1,
-                getUrl: (m) => m.type === 'movie' ? 
-                    `https://vidsrc.to/embed/movie/${m.id}` : 
-                    `https://vidsrc.to/embed/tv/${m.id}/${m.season}/${m.episode}` },
-            { id: 'vidsrcme', name: 'VidSrc.me', quality: '1080p', icon: 'fa-play', tier: 1,
-                getUrl: (m) => m.type === 'movie' ? 
-                    `https://vidsrc.me/embed/movie?tmdb=${m.id}` : 
-                    `https://vidsrc.me/embed/tv?tmdb=${m.id}&season=${m.season}&episode=${m.episode}` },
-            { id: 'vidking', name: 'VidKing', quality: '1080p', icon: 'fa-bolt', tier: 1,
-                getUrl: (m) => m.type === 'movie' ? 
-                    `https://www.vidking.net/embed/movie/${m.id}` : 
-                    `https://www.vidking.net/embed/tv/${m.id}/${m.season}/${m.episode}` },
-            
-            // Tier 2 - Reliable
-            { id: 'autoembed', name: 'AutoEmbed', quality: '1080p', icon: 'fa-film', tier: 2,
-                getUrl: (m) => m.type === 'movie' ? 
-                    `https://player.autoembed.cc/embed/movie/${m.id}` : 
-                    `https://player.autoembed.cc/embed/tv/${m.id}/${m.season}/${m.episode}` },
-            { id: 'embedsu', name: 'Embed.su', quality: '1080p', icon: 'fa-server', tier: 2,
-                getUrl: (m) => m.type === 'movie' ? 
-                    `https://embed.su/embed/movie/${m.id}` : 
-                    `https://embed.su/embed/tv/${m.id}/${m.season}/${m.episode}` },
-            { id: '2embed', name: '2Embed', quality: '1080p', icon: 'fa-tv', tier: 2,
-                getUrl: (m) => m.type === 'movie' ? 
-                    `https://www.2embed.cc/embed/${m.id}` : 
-                    `https://www.2embed.cc/embedtv/${m.id}&s=${m.season}&e=${m.episode}` },
-            { id: 'moviee', name: 'Moviee.tv', quality: '720p', icon: 'fa-video', tier: 2,
-                getUrl: (m) => m.type === 'movie' ? 
-                    `https://moviee.tv/embed/movie/${m.id}` : 
-                    `https://moviee.tv/embed/tv/${m.id}/${m.season}/${m.episode}` },
-            
-            // Tier 3 - Alternative
-            { id: 'smashystream', name: 'Smashy', quality: '1080p', icon: 'fa-fire', tier: 3,
-                getUrl: (m) => m.type === 'movie' ? 
-                    `https://embed.smashystream.com/playere.php?tmdb=${m.id}` : 
-                    `https://embed.smashystream.com/playere.php?tmdb=${m.id}&season=${m.season}&episode=${m.episode}` },
-            { id: 'flixhq', name: 'FlixHQ', quality: '1080p', icon: 'fa-clapperboard', tier: 3,
-                getUrl: (m) => m.type === 'movie' ? 
-                    `https://flixhq.to/embed/movie/${m.id}` : 
-                    `https://flixhq.to/embed/tv/${m.id}/${m.season}/${m.episode}` },
-            { id: 'superembed', name: 'SuperEmbed', quality: '720p', icon: 'fa-rocket', tier: 3,
-                getUrl: (m) => m.type === 'movie' ? 
-                    `https://multiembed.mov/directstream.php?video_id=${m.id}&tmdb=1` : 
-                    `https://multiembed.mov/directstream.php?video_id=${m.id}&tmdb=1&s=${m.season}&e=${m.episode}` },
-            
-            // Tier 4 - Backup
-            { id: 'vidlink', name: 'VidLink', quality: '720p', icon: 'fa-link', tier: 4,
-                getUrl: (m) => m.type === 'movie' ? 
-                    `https://vidlink.pro/movie/${m.id}` : 
-                    `https://vidlink.pro/tv/${m.id}/${m.season}/${m.episode}` },
-            { id: 'vidsrcicu', name: 'VidSrc.icu', quality: '1080p', icon: 'fa-circle-play', tier: 4,
-                getUrl: (m) => m.type === 'movie' ? 
-                    `https://vidsrc.icu/embed/movie/${m.id}` : 
-                    `https://vidsrc.icu/embed/tv/${m.id}/${m.season}/${m.episode}` },
-            { id: 'embedmoo', name: 'Embed.moo', quality: '720p', icon: 'fa-cow', tier: 4,
-                getUrl: (m) => m.type === 'movie' ? 
-                    `https://embed.mooovie.com/embed/movie/${m.id}` : 
-                    `https://embed.mooovie.com/embed/tv/${m.id}/${m.season}/${m.episode}` },
-        ];
+    <!-- Hidden file input for import -->
+    <input type="file" id="import-file-input" style="display:none;" accept=".json" onchange="StorageManager.handleImport(event)">
 
-        const API_KEY = "41cd097c8beb5d6582f7ab6f11180b6d";
-        
-        const state = {
-            activeServer: 'vidsrc',
-            currentMedia: null,
-            currentUser: null,
-            currentCategory: 'trending',
-            currentHero: null
-        };
-
-        // ==================== AUTHENTICATION SYSTEM ====================
-        const Auth = {
-            DB_NAME: 'StreamHubAuth',
-            DB_VERSION: 1,
-            currentMode: 'login',
-
-            async initDB() {
-                return new Promise((resolve, reject) => {
-                    const request = indexedDB.open(this.DB_NAME, this.DB_VERSION);
-                    request.onupgradeneeded = (e) => {
-                        const db = e.target.result;
-                        if (!db.objectStoreNames.contains('users')) {
-                            const store = db.createObjectStore('users', { keyPath: 'email' });
-                            store.createIndex('email', 'email', { unique: true });
-                        }
-                        if (!db.objectStoreNames.contains('sessions')) {
-                            db.createObjectStore('sessions', { keyPath: 'id' });
-                        }
-                    };
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            },
-
-            async hashPassword(password) {
-                const encoder = new TextEncoder();
-                const data = encoder.encode(password + 'StreamHubSalt2024!@#');
-                const hash = await crypto.subtle.digest('SHA-256', data);
-                return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-            },
-
-            showAuth(mode = 'login') {
-                this.currentMode = mode;
-                document.getElementById('auth-overlay').classList.add('active');
-                this.switchTab(mode);
-                document.getElementById('auth-error').classList.remove('visible');
-                document.getElementById('auth-success').classList.remove('visible');
-                document.getElementById('auth-form').reset();
-            },
-
-            hideAuth() {
-                document.getElementById('auth-overlay').classList.remove('active');
-            },
-
-            switchTab(tab) {
-                this.currentMode = tab;
-                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-                document.querySelector(`.auth-tab:${tab === 'login' ? 'first' : 'last'}-child`).classList.add('active');
-                
-                document.getElementById('name-group').style.display = tab === 'register' ? 'block' : 'none';
-                document.getElementById('confirm-group').style.display = tab === 'register' ? 'block' : 'none';
-                document.getElementById('auth-submit-btn').textContent = tab === 'login' ? 'Sign In' : 'Create Account';
-                document.getElementById('auth-error').classList.remove('visible');
-                document.getElementById('auth-success').classList.remove('visible');
-                document.getElementById('auth-form').reset();
-            },
-
-            togglePassword() {
-                const pw = document.getElementById('auth-password');
-                const icon = document.querySelector('.password-toggle i');
-                pw.type = pw.type === 'password' ? 'text' : 'password';
-                icon.className = pw.type === 'password' ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
-            },
-
-            async handleSubmit(e) {
-                e.preventDefault();
-                const email = document.getElementById('auth-email').value.trim().toLowerCase();
-                const password = document.getElementById('auth-password').value;
-                const errorEl = document.getElementById('auth-error');
-                const successEl = document.getElementById('auth-success');
-                
-                errorEl.classList.remove('visible');
-                successEl.classList.remove('visible');
-
-                if (!email || !password) {
-                    this.showError('Please fill in all fields');
-                    return;
-                }
-
-                if (password.length < 8) {
-                    this.showError('Password must be at least 8 characters');
-                    return;
-                }
-
-                try {
-                    if (this.currentMode === 'register') {
-                        const name = document.getElementById('auth-name').value.trim();
-                        const confirm = document.getElementById('auth-confirm').value;
-                        
-                        if (!name) { this.showError('Please enter your name'); return; }
-                        if (password !== confirm) { this.showError('Passwords do not match'); return; }
-
-                        await this.register(email, password, name);
-                        successEl.textContent = 'Account created! Signing you in...';
-                        successEl.classList.add('visible');
-                        setTimeout(() => this.login(email, password), 800);
-                    } else {
-                        await this.login(email, password);
-                    }
-                } catch (err) {
-                    this.showError(err.message);
-                }
-            },
-
-            showError(msg) {
-                const el = document.getElementById('auth-error');
-                el.textContent = msg;
-                el.classList.add('visible');
-            },
-
-            async register(email, password, name) {
-                const db = await this.initDB();
-                const hashedPassword = await this.hashPassword(password);
-                
-                return new Promise((resolve, reject) => {
-                    const tx = db.transaction('users', 'readwrite');
-                    const store = tx.objectStore('users');
-                    
-                    const getRequest = store.get(email);
-                    getRequest.onsuccess = () => {
-                        if (getRequest.result) {
-                            reject(new Error('An account with this email already exists'));
-                            return;
-                        }
-                        
-                        const user = {
-                            email,
-                            password: hashedPassword,
-                            name,
-                            createdAt: new Date().toISOString(),
-                            avatar: name[0].toUpperCase(),
-                            watchlist: {},
-                            history: {},
-                            settings: { theme: 'dark' }
-                        };
-                        
-                        store.add(user);
-                        tx.oncomplete = () => resolve(user);
-                        tx.onerror = () => reject(new Error('Registration failed'));
-                    };
-                });
-            },
-
-            async login(email, password) {
-                const db = await this.initDB();
-                const hashedPassword = await this.hashPassword(password);
-                
-                return new Promise((resolve, reject) => {
-                    const tx = db.transaction('users', 'readonly');
-                    const store = tx.objectStore('users');
-                    const request = store.get(email);
-                    
-                    request.onsuccess = () => {
-                        const user = request.result;
-                        if (!user) {
-                            reject(new Error('No account found with this email'));
-                            return;
-                        }
-                        if (user.password !== hashedPassword) {
-                            reject(new Error('Incorrect password'));
-                            return;
-                        }
-                        
-                        // Create session
-                        const sessionUser = { ...user };
-                        delete sessionUser.password;
-                        state.currentUser = sessionUser;
-                        
-                        // Save session
-                        localStorage.setItem('streamhub_session', JSON.stringify({
-                            email: user.email,
-                            name: user.name,
-                            avatar: user.avatar,
-                            loginTime: Date.now()
-                        }));
-                        
-                        this.hideAuth();
-                        App.onLogin(sessionUser);
-                        App.toast(`Welcome back, ${user.name}! 👋`, 'success');
-                        resolve(sessionUser);
-                    };
-                    request.onerror = () => reject(new Error('Login failed'));
-                });
-            },
-
-            guestLogin() {
-                const guestUser = {
-                    email: 'guest@streamhub.local',
-                    name: 'Guest',
-                    avatar: 'G',
-                    isGuest: true,
-                    watchlist: {},
-                    history: {}
-                };
-                state.currentUser = guestUser;
-                localStorage.setItem('streamhub_session', JSON.stringify(guestUser));
-                this.hideAuth();
-                App.onLogin(guestUser);
-                App.toast('Signed in as Guest', 'info');
-            },
-
-            async logout() {
-                state.currentUser = null;
-                localStorage.removeItem('streamhub_session');
-                document.getElementById('user-dropdown').classList.remove('active');
-                document.getElementById('profile-modal').classList.remove('active');
-                App.onLogout();
-                App.toast('Signed out successfully', 'info');
-            },
-
-            checkSession() {
-                const session = localStorage.getItem('streamhub_session');
-                if (session) {
-                    try {
-                        const user = JSON.parse(session);
-                        if (user.email) {
-                            state.currentUser = user;
-                            App.onLogin(user);
-                            return true;
-                        }
-                    } catch (e) {}
-                }
-                return false;
-            },
-
-            async updateUserData(updates) {
-                if (!state.currentUser || state.currentUser.isGuest) return;
-                const db = await this.initDB();
-                return new Promise((resolve, reject) => {
-                    const tx = db.transaction('users', 'readwrite');
-                    const store = tx.objectStore('users');
-                    const request = store.get(state.currentUser.email);
-                    request.onsuccess = () => {
-                        const user = request.result;
-                        if (user) {
-                            Object.assign(user, updates);
-                            store.put(user);
-                            Object.assign(state.currentUser, updates);
-                            tx.oncomplete = () => resolve(user);
-                        }
-                    };
-                });
-            }
-        };
-
-        // ==================== STORAGE ENGINE ====================
-        const StorageEngine = {
-            getStorageKey() {
-                if (state.currentUser && !state.currentUser.isGuest) {
-                    return `streamhub_user_${state.currentUser.email}`;
-                }
-                return 'streamhub_guest_data';
-            },
-
-            getData() {
-                try {
-                    const raw = localStorage.getItem(this.getStorageKey());
-                    return raw ? JSON.parse(raw) : { history: {}, watchlist: {}, settings: {} };
-                } catch (e) {
-                    return { history: {}, watchlist: {}, settings: {} };
-                }
-            },
-
-            saveData(data) {
-                localStorage.setItem(this.getStorageKey(), JSON.stringify(data));
-                App.renderContinueWatching();
-            },
-
-            saveProgress(media) {
-                if (!media || !media.id) return;
-                const db = this.getData();
-                const key = `${media.id}_${media.type}`;
-                db.history[key] = {
-                    ...media,
-                    progressPct: Math.floor(Math.random() * 50) + 25,
-                    timestamp: Date.now()
-                };
-                this.saveData(db);
-            },
-
-            toggleWatchlist(media) {
-                if (!media || !media.id) return false;
-                const db = this.getData();
-                const key = `${media.id}_${media.type}`;
-                let isAdded;
-                if (db.watchlist[key]) {
-                    delete db.watchlist[key];
-                    isAdded = false;
-                } else {
-                    db.watchlist[key] = { ...media, addedAt: Date.now() };
-                    isAdded = true;
-                }
-                this.saveData(db);
-                return isAdded;
-            },
-
-            isWatchlisted(id, type) {
-                const db = this.getData();
-                return !!db.watchlist[`${id}_${type}`];
-            },
-
-            clearHistory() {
-                const db = this.getData();
-                db.history = {};
-                this.saveData(db);
-                App.toast('History cleared', 'info');
-            },
-
-            exportBackup() {
-                const db = this.getData();
-                const exportData = {
-                    ...db,
-                    user: state.currentUser?.email || 'guest',
-                    exportDate: new Date().toISOString(),
-                    version: '4.0'
-                };
-                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = `streamhub_backup_${Date.now()}.json`;
-                a.click();
-                URL.revokeObjectURL(a.href);
-                App.toast('Backup exported! 💾', 'success');
-            }
-        };
-
-        // ==================== APP ====================
-        const App = {
-            toast(msg, type = 'info') {
-                const container = document.getElementById('toast-container');
-                const toast = document.createElement('div');
-                toast.className = 'toast';
-                const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
-                toast.innerHTML = `${icons[type] || 'ℹ️'} ${msg}`;
-                container.appendChild(toast);
-                setTimeout(() => {
-                    toast.style.opacity = '0';
-                    toast.style.transform = 'translateX(120%)';
-                    setTimeout(() => toast.remove(), 300);
-                }, 3500);
-                if (container.children.length > 5) container.firstChild.remove();
-            },
-
-            onLogin(user) {
-                document.getElementById('login-btn').style.display = 'none';
-                document.getElementById('user-chip').style.display = 'flex';
-                document.getElementById('nav-avatar').textContent = user.avatar || user.name[0];
-                document.getElementById('nav-username').textContent = user.name;
-                this.renderContinueWatching();
-                this.refreshContent();
-            },
-
-            onLogout() {
-                document.getElementById('login-btn').style.display = 'flex';
-                document.getElementById('user-chip').style.display = 'none';
-                document.getElementById('continue-section').style.display = 'none';
-                this.refreshContent();
-            },
-
-            toggleUserMenu() {
-                document.getElementById('user-dropdown').classList.toggle('active');
-            },
-
-            showProfile() {
-                document.getElementById('user-dropdown').classList.remove('active');
-                const modal = document.getElementById('profile-modal');
-                const info = document.getElementById('profile-info');
-                if (state.currentUser) {
-                    info.innerHTML = `
-                        <div style="width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,#e50914,#3b82f6); display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:900; margin:0 auto 16px; color:#fff;">
-                            ${state.currentUser.avatar}
-                        </div>
-                        <h3>${state.currentUser.name}</h3>
-                        <p style="color:var(--text-muted);">${state.currentUser.email}</p>
-                        ${state.currentUser.isGuest ? '<p style="color:var(--accent-warning); font-size:0.8rem;">Guest accounts have limited features</p>' : ''}
-                    `;
-                }
-                modal.classList.add('active');
-            },
-
-            toggleTheme() {
-                const current = document.documentElement.getAttribute('data-theme') || 'dark';
-                const next = current === 'dark' ? 'neon' : 'dark';
-                document.documentElement.setAttribute('data-theme', next);
-                this.toast(`Theme: ${next === 'dark' ? '🌙 Dark' : '💜 Neon'}`, 'info');
-            },
-
-            async loadCategory(type) {
-                state.currentCategory = type;
-                document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-                
-                let url, title;
-                switch(type) {
-                    case 'movie':
-                        url = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`;
-                        title = '🎬 Popular Movies';
-                        break;
-                    case 'tv':
-                        url = `https://api.themoviedb.org/3/tv/popular?api_key=${API_KEY}`;
-                        title = '📺 Popular TV Shows';
-                        break;
-                    default:
-                        url = `https://api.themoviedb.org/3/trending/all/week?api_key=${API_KEY}`;
-                        title = '🔥 Trending Now';
-                }
-                document.getElementById('section-heading').innerHTML = title;
-                await this.fetchAndRender(url);
-            },
-
-            showWatchlist() {
-                const db = StorageEngine.getData();
-                const items = Object.values(db.watchlist);
-                document.getElementById('section-heading').innerHTML = '📋 My Watchlist';
-                document.getElementById('continue-section').style.display = 'none';
-                
-                const grid = document.getElementById('main-grid');
-                if (items.length === 0) {
-                    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--text-muted);">
-                        <i class="fa-solid fa-bookmark" style="font-size:3rem; opacity:0.3;"></i>
-                        <h3 style="margin-top:16px;">Watchlist Empty</h3>
-                        <p>Add movies and shows to build your collection</p>
-                    </div>`;
-                } else {
-                    this.renderGrid(items);
-                }
-            },
-
-            async fetchAndRender(url) {
-                try {
-                    const res = await fetch(url);
-                    const data = await res.json();
-                    const items = (data.results || []).filter(i => i.poster_path);
-                    if (items.length > 0) {
-                        this.updateHero(items[0]);
-                        this.renderGrid(items);
-                    }
-                } catch(e) {
-                    console.error('API Error:', e);
-                    this.toast('Failed to load content', 'error');
-                }
-            },
-
-            updateHero(item) {
-                state.currentHero = item;
-                const isMovie = item.media_type === 'movie' || item.title;
-                const title = isMovie ? item.title : item.name;
-                document.getElementById('hero-banner').style.backgroundImage = 
-                    `url(https://image.tmdb.org/t/p/original${item.backdrop_path || item.poster_path})`;
-                document.getElementById('hero-title').textContent = title;
-                document.getElementById('hero-rating').textContent = (item.vote_average || 7.5).toFixed(1);
-                document.getElementById('hero-year').textContent = (item.release_date || item.first_air_date || '2024').split('-')[0];
-                document.getElementById('hero-type').textContent = isMovie ? '🎬 Movie' : '📺 TV Series';
-                document.getElementById('hero-overview').textContent = item.overview || 'Click to discover this title.';
-                document.getElementById('hero-play-btn').onclick = () => 
-                    Player.launch(item.id, isMovie ? 'movie' : 'tv', title, 1, 1, item.poster_path);
-            },
-
-            renderGrid(items) {
-                const grid = document.getElementById('main-grid');
-                grid.innerHTML = items.map(item => {
-                    const isMovie = item.media_type === 'movie' || item.title;
-                    const title = isMovie ? item.title : item.name;
-                    const type = isMovie ? 'movie' : 'tv';
-                    const isFav = StorageEngine.isWatchlisted(item.id, type);
-                    return `
-                        <div class="card">
-                            <button class="card-fav ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); App.toggleFav(${item.id}, '${type}', '${title.replace(/'/g, "\\'")}', '${item.poster_path}')">
-                                <i class="fa-solid fa-bookmark"></i>
-                            </button>
-                            <div class="card-poster" onclick="Player.launch(${item.id}, '${type}', '${title.replace(/'/g, "\\'")}', 1, 1, '${item.poster_path}')">
-                                <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="${title}" loading="lazy">
-                            </div>
-                            <div class="card-body" onclick="Player.launch(${item.id}, '${type}', '${title.replace(/'/g, "\\'")}', 1, 1, '${item.poster_path}')">
-                                <div class="card-title">${title}</div>
-                                <div class="card-info">
-                                    <span style="color:var(--accent-primary); font-weight:800;">${type.toUpperCase()}</span>
-                                    <span>⭐ ${(item.vote_average || 7).toFixed(1)}</span>
-                                </div>
-                            </div>
-                        </div>`;
-                }).join('');
-            },
-
-            toggleFav(id, type, title, posterPath) {
-                const isAdded = StorageEngine.toggleWatchlist({ id, type, title, posterPath });
-                this.toast(isAdded ? 'Added to Watchlist! 📋' : 'Removed from Watchlist', isAdded ? 'success' : 'info');
-                this.refreshContent();
-            },
-
-            renderContinueWatching() {
-                const db = StorageEngine.getData();
-                const history = Object.values(db.history)
-                    .sort((a, b) => b.timestamp - a.timestamp)
-                    .slice(0, 10);
-                const section = document.getElementById('continue-section');
-                const grid = document.getElementById('continue-grid');
-                
-                if (history.length === 0) {
-                    section.style.display = 'none';
-                    return;
-                }
-                section.style.display = 'block';
-                grid.innerHTML = history.map(item => `
-                    <div class="card" onclick="Player.launch(${item.id}, '${item.type}', '${item.title.replace(/'/g, "\\'")}', ${item.season || 1}, ${item.episode || 1}, '${item.posterPath || ''}')">
-                        <div class="card-poster">
-                            <img src="https://image.tmdb.org/t/p/w500${item.posterPath || ''}" alt="${item.title}" loading="lazy">
-                            <div style="position:absolute; bottom:0; left:0; width:100%; height:4px; background:rgba(0,0,0,0.7);">
-                                <div style="height:100%; background:var(--accent-primary); width:${item.progressPct || 30}%;"></div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="card-title">${item.title}</div>
-                            <div class="card-info">
-                                <span>${item.type === 'tv' ? `S${item.season}E${item.episode}` : 'Movie'}</span>
-                                <span>${item.progressPct || 30}%</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            },
-
-            refreshContent() {
-                this.loadCategory(state.currentCategory);
-            }
-        };
-
-        // ==================== PLAYER ====================
-        const Player = {
-            launch(id, type, title, season = 1, episode = 1, posterPath = '') {
-                state.currentMedia = { id, type, title, season, episode, posterPath };
-                document.getElementById('player-title').textContent = title;
-                document.getElementById('player-sub').textContent = 
-                    type === 'movie' ? '🎬 Movie' : `📺 S${season} E${episode}`;
-                
-                this.renderServers();
-                
-                const tvSection = document.getElementById('tv-section');
-                if (type === 'tv') {
-                    tvSection.style.display = 'block';
-                    this.loadSeasons(id);
-                } else {
-                    tvSection.style.display = 'none';
-                }
-                
-                this.loadStream();
-                document.getElementById('player-modal').classList.add('active');
-                document.body.style.overflow = 'hidden';
-                StorageEngine.saveProgress(state.currentMedia);
-            },
-
-            renderServers() {
-                const container = document.getElementById('server-buttons');
-                container.innerHTML = STREAMING_SERVERS.map(s => `
-                    <div class="server-card ${s.id === state.activeServer ? 'active' : ''}" 
-                         onclick="Player.switchServer('${s.id}')" 
-                         title="Tier ${s.tier} · ${s.quality}">
-                        <i class="fa-solid ${s.icon}"></i> ${s.name}
-                        <span class="server-quality">${s.quality}</span>
-                    </div>
-                `).join('');
-            },
-
-            switchServer(serverId) {
-                state.activeServer = serverId;
-                this.renderServers();
-                this.loadStream();
-                const server = STREAMING_SERVERS.find(s => s.id === serverId);
-                App.toast(`Switched to ${server?.name} (${server?.quality})`, 'info');
-            },
-
-            async loadSeasons(id) {
-                try {
-                    const res = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${API_KEY}`);
-                    const data = await res.json();
-                    const select = document.getElementById('season-select');
-                    select.innerHTML = (data.seasons || [])
-                        .filter(s => s.season_number > 0)
-                        .map(s => `<option value="${s.season_number}" ${s.season_number == state.currentMedia.season ? 'selected' : ''}>
-                            Season ${s.season_number} (${s.episode_count || '?'} eps)
-                        </option>`).join('');
-                    await this.loadEpisodes();
-                } catch(e) {}
-            },
-
-            async loadEpisodes() {
-                const seasonNum = parseInt(document.getElementById('season-select').value) || 1;
-                state.currentMedia.season = seasonNum;
-                try {
-                    const res = await fetch(
-                        `https://api.themoviedb.org/3/tv/${state.currentMedia.id}/season/${seasonNum}?api_key=${API_KEY}`
-                    );
-                    const data = await res.json();
-                    const grid = document.getElementById('episode-grid');
-                    grid.innerHTML = (data.episodes || []).map(ep => `
-                        <div class="episode-item ${ep.episode_number == state.currentMedia.episode ? 'active' : ''}" 
-                             onclick="Player.selectEpisode(${ep.episode_number})">
-                            <img src="${ep.still_path ? 'https://image.tmdb.org/t/p/w300' + ep.still_path : ''}" 
-                                 alt="E${ep.episode_number}" style="width:80px; height:50px; object-fit:cover; border-radius:4px; background:var(--surface-2);">
-                            <div style="min-width:0;">
-                                <div style="font-size:0.7rem; color:var(--accent-secondary); font-weight:800;">EP ${ep.episode_number}</div>
-                                <div style="font-size:0.8rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${ep.name}</div>
-                                ${ep.runtime ? `<div style="font-size:0.7rem; color:var(--text-muted);">${ep.runtime} min</div>` : ''}
-                            </div>
-                        </div>
-                    `).join('');
-                } catch(e) {}
-            },
-
-            selectEpisode(epNum) {
-                state.currentMedia.episode = epNum;
-                document.getElementById('player-sub').textContent = 
-                    `📺 S${state.currentMedia.season} E${epNum}`;
-                this.loadEpisodes();
-                this.loadStream();
-            },
-
-            loadStream() {
-                const provider = STREAMING_SERVERS.find(s => s.id === state.activeServer) || STREAMING_SERVERS[0];
-                document.getElementById('video-frame').src = provider.getUrl(state.currentMedia);
-            },
-
-            close() {
-                document.getElementById('video-frame').src = '';
-                document.getElementById('player-modal').classList.remove('active');
-                document.body.style.overflow = '';
-                App.renderContinueWatching();
-            }
-        };
-
-        // ==================== INIT ====================
-        document.addEventListener('DOMContentLoaded', () => {
-            // Close dropdown on outside click
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('#user-menu-container')) {
-                    document.getElementById('user-dropdown').classList.remove('active');
-                }
-            });
-
-            // Search
-            let searchTimer;
-            document.getElementById('search-input').addEventListener('input', (e) => {
-                clearTimeout(searchTimer);
-                const q = e.target.value.trim();
-                if (q.length > 2) {
-                    searchTimer = setTimeout(async () => {
-                        const url = `https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(q)}`;
-                        document.getElementById('section-heading').innerHTML = `🔍 Results for "${q}"`;
-                        await App.fetchAndRender(url);
-                    }, 400);
-                } else if (q.length === 0) {
-                    App.loadCategory(state.currentCategory);
-                }
-            });
-
-            // Keyboard shortcuts
-            window.addEventListener('keydown', (e) => {
-                if (e.target.tagName === 'INPUT') return;
-                if (e.key === 'Escape') {
-                    Player.close();
-                    document.getElementById('profile-modal').classList.remove('active');
-                }
-            });
-
-            // Check for existing session
-            if (!Auth.checkSession()) {
-                // Show auth for new users
-                // Auth.showAuth(); // Uncomment to require login
-                Auth.guestLogin(); // Auto guest login for demo
-            }
-
-            App.loadCategory('trending');
-            console.log('🚀 StreamHub Pro Ready | 12 Streaming Sources | IndexedDB Auth');
-        });
-    </script>
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
