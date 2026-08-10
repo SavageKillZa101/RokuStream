@@ -3,12 +3,12 @@ const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const TMDB_API_KEY = "YOUR_TMDB_API_KEY_HERE"; // Your TMDb Key
+const TMDB_API_KEY = "41cd097c8beb5d6582f7ab6f11180b6d"; // Your TMDb Key
 
 // 1. Fetch Netflix-style categories for Roku UI
 app.get('/api/trending', async (req, res) => {
     try {
-        const response = await axios.get(`https://api.themoviedb.org/3/trending/movie/week?api_key=${TMDB_API_KEY}`);
+        const response = await axios.get(`https://api.themoviedb.org/3/trending/movie/week?api_key=${41cd097c8beb5d6582f7ab6f11180b6d}`);
         res.json(response.data.results);
     } catch (err) {
         res.status(500).json({ error: err.message });
