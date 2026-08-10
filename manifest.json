@@ -1,0 +1,29 @@
+{
+    "name": "StreamHub Pro",
+    "short_name": "StreamHub",
+    "description": "Ultimate Streaming Platform",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a0e17",
+    "theme_color": "#e50914",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "assets/icons/icon-72.png",
+            "sizes": "72x72",
+            "type": "image/png"
+        },
+        {
+            "src": "assets/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "assets/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "categories": ["entertainment", "video"],
+    "lang": "en-US"
+}
