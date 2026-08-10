@@ -184,6 +184,7 @@
             <p style="color:var(--tm);" id="prof-email">user@email.com</p>
             <div style="display:flex;gap:20px;justify-content:center;margin:16px 0;"><div><strong id="prof-wl">0</strong><br><small>Watchlist</small></div><div><strong id="prof-hi">0</strong><br><small>Watched</small></div></div>
             <button class="btn btn-o" style="width:100%;justify-content:center;margin-bottom:6px;" onclick="App.exportData()"><i class="fa-solid fa-download"></i> Export Data</button>
+            <button class="btn btn-o" style="width:100%;justify-content:center;margin-bottom:6px;" onclick="document.getElementById('import-file').click()"><i class="fa-solid fa-upload"></i> Import Data</button>
             <button class="btn btn-o" style="width:100%;justify-content:center;color:var(--d);border-color:var(--d);" onclick="Auth.logout()"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
         </div>
     </div>
@@ -247,7 +248,8 @@
     <div class="player-modal" id="player-modal">
         <div class="player-top"><div><h3 id="p-title">Title</h3><span style="font-size:.75rem;color:var(--tm);" id="p-meta">Movie</span></div><button class="btn btn-o btn-sm" onclick="Player.close()"><i class="fa-solid fa-xmark"></i> Close</button></div>
         <div class="player-body">
-            <div class="player-main"><iframe id="video-frame" allowfullscreen allow="autoplay;encrypted-media;picture-in-picture" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe></div>
+            <!-- Sandbox removed for universal cross-origin stream support -->
+            <div class="player-main"><iframe id="video-frame" allowfullscreen allow="autoplay;encrypted-media;picture-in-picture"></iframe></div>
             <div class="player-sidebar">
                 <div><strong style="font-size:.7rem;color:var(--tm);text-transform:uppercase;">Servers</strong><div class="server-grid" id="server-grid"></div></div>
                 <div id="tv-sec" style="display:none;"><select class="form-input" id="season-sel" onchange="Player.loadEps()" style="margin-bottom:8px;"></select><div class="ep-list" id="ep-list"></div></div>
@@ -272,7 +274,6 @@
         { id:'superembed', name:'SuperEmbed', q:'720p', getUrl:(m,t,s,e)=>`https://multiembed.mov/directstream.php?video_id=${m}&tmdb=1${t==='tv'?'&s='+s+'&e='+e:''}` },
         { id:'vidsrcicu', name:'VidSrc.icu', q:'1080p', getUrl:(m,t,s,e)=>t==='movie'?`https://vidsrc.icu/embed/movie/${m}`:`https://vidsrc.icu/embed/tv/${m}/${s}/${e}` },
         { id:'vidlink', name:'VidLink', q:'720p', getUrl:(m,t,s,e)=>t==='movie'?`https://vidlink.pro/movie/${m}`:`https://vidlink.pro/tv/${m}/${s}/${e}` },
-        // Febbox integration (requires API key)
         { id:'febbox', name:'Febbox', q:'4K', getUrl:(m,t,s,e)=>{ const k=Settings.get('febbox'); return k?`https://api.febbox.com/stream?key=${k}&id=${m}&type=${t}&s=${s}&e=${e}`:''; }, needsKey:true }
     ];
 
@@ -324,8 +325,21 @@
 
     // ============ ROUTER ============
     const Router = {
-        go(r){ State.route=r; State.page=1; document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')===`#${r}`)); App.loadRoute(r); window.location.hash=r; },
-        init(){ const h=window.location.hash.slice(1)||'home'; this.go(h); window.addEventListener('hashchange',()=>{ const r=window.location.hash.slice(1)||'home'; this.go(r); }); }
+        go(r){ 
+            if (State.route !== r) { State.page = 1; } // Prevent forced reset on pagination
+            State.route = r; 
+            document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')===`#${r}`)); 
+            App.loadRoute(r); 
+            window.location.hash = r; 
+        },
+        init(){ 
+            const h = window.location.hash.slice(1) || 'home'; 
+            this.go(h); 
+            window.addEventListener('hashchange', () => { 
+                const r = window.location.hash.slice(1) || 'home'; 
+                this.go(r); 
+            }); 
+        }
     };
 
     // ============ PLAYER ============
@@ -352,14 +366,20 @@
         },
         switch(i){ State.server=i; this.renderServers(); this.loadStream(); UI.toast(`Server: ${SERVERS[i].name}`,'info'); },
         loadStream(){
-            const m=State.media; if(!m) return;
-            const s=SERVERS[State.server];
-            if(s.needsKey&&!Settings.get('febbox')){ UI.toast('Add Febbox API key in Settings','error'); this.switch(0); return; }
-            const url=s.getUrl(m.id,m.type,m.season,m.episode);
+            const m = State.media; if(!m) return;
+            const s = SERVERS[State.server];
+            if(s.needsKey && !Settings.get('febbox')){ UI.toast('Add Febbox API key in Settings','error'); this.switch(0); return; }
+            const url = s.getUrl(m.id,m.type,m.season,m.episode);
             if(!url){ UI.toast('Cannot load this server','error'); this.switch(0); return; }
-            document.getElementById('video-frame').src=url;
-            // Auto-failover after 8 seconds
-            clearTimeout(this._failover); this._failover=setTimeout(()=>{ if(State.server===i) this.nextServer(); },8000);
+            
+            document.getElementById('video-frame').src = url;
+            
+            // Fixed failover Reference Error logic
+            clearTimeout(this._failover); 
+            const currentServer = State.server;
+            this._failover = setTimeout(() => { 
+                if(State.server === currentServer) this.nextServer(); 
+            }, 8000);
         },
         nextServer(){ const n=(State.server+1)%SERVERS.length; this.switch(n); },
         async loadSeasons(id){ try{ const d=await API.fetch(`/tv/${id}`); const sel=document.getElementById('season-sel'); sel.innerHTML=(d.seasons||[]).filter(s=>s.season_number>0).map(s=>`<option value="${s.season_number}">S${s.season_number} (${s.episode_count||'?'}ep)</option>`).join(''); await this.loadEps(); }catch(e){} },
@@ -394,26 +414,86 @@
     const App = {
         onAuth(){ UI.updateUser(); this.renderContinue(); this.refresh(); },
         refresh(){ this.loadRoute(State.route); },
-        async search(q){ if(q.length<2&&q.length>0) return; if(!q){ this.loadRoute(State.route); return; } State.searchQ=q; this.showLoading(); try{ const d=await API.fetch('/search/multi',{query:q}); if(d.results?.length){ const items=d.results.filter(i=>i.poster_path&&i.media_type!=='person').map(API.transform); if(items.length){ this.setHero(items[0]); this.renderGrid(items); this.setPagination(d.total_pages,1); document.getElementById('sec-title').innerHTML=`🔍 "${q}"`; } } }catch(e){ this.showError('Search failed'); } this.hideLoading(); },
-        async loadRoute(r){
-            State.route=r; State.page=1; document.getElementById('continue-sec').style.display='block';
-            this.showLoading(); this.renderSkeletons();
-            try{
-                let d,title;
-                if(r==='movies'){ d=await API.fetch('/movie/popular'); title='🎬 Popular Movies'; }
-                else if(r==='tv'){ d=await API.fetch('/tv/popular'); title='📺 Popular TV'; }
-                else if(r==='watchlist'){ const wl=Store.getWL(); document.getElementById('continue-sec').style.display='none'; document.getElementById('pagination').style.display='none'; if(wl.length){ this.renderGrid(wl); title='📋 Watchlist'; } else { document.getElementById('main-grid').innerHTML='<div class="empty"><i class="fa-solid fa-bookmark"></i><h3>Empty</h3><p>Add items!</p></div>'; title='📋 Watchlist'; } this.hideLoading(); document.getElementById('sec-title').innerHTML=title; return; }
-                else { d=await API.fetch('/trending/all/week'); title='🔥 Trending'; }
-                if(d?.results?.length){ const items=d.results.map(API.transform); this.setHero(items[0]); this.renderGrid(items); this.setPagination(d.total_pages,1); }
-                document.getElementById('sec-title').innerHTML=title;
-            }catch(e){ this.showError('Failed to load'); }
+        async search(q){ 
+            if(q.length<2&&q.length>0) return; 
+            if(!q){ this.loadRoute(State.route); return; } 
+            State.searchQ=q; 
+            this.showLoading(); 
+            try { 
+                const d = await API.fetch('/search/multi', { query: q, page: State.page }); 
+                if (d.results?.length) { 
+                    const items = d.results.filter(i=>i.poster_path && i.media_type!=='person').map(API.transform); 
+                    if (items.length) { 
+                        if (State.page === 1) this.setHero(items[0]); 
+                        this.renderGrid(items); 
+                        this.setPagination(d.total_pages, State.page); 
+                        document.getElementById('sec-title').innerHTML=`🔍 "${q}"`; 
+                    } 
+                } 
+            } catch(e) { this.showError('Search failed'); } 
+            this.hideLoading(); 
+        },
+        async loadRoute(r) {
+            document.getElementById('continue-sec').style.display = (State.page === 1) ? 'block' : 'none'; // Only show continue blocks on page 1
+            this.showLoading(); 
+            this.renderSkeletons();
+            
+            try {
+                let d, title;
+                const pageParam = { page: State.page };
+                
+                if (r === 'movies') { 
+                    d = await API.fetch('/movie/popular', pageParam); 
+                    title = '🎬 Popular Movies'; 
+                } else if (r === 'tv') { 
+                    d = await API.fetch('/tv/popular', pageParam); 
+                    title = '📺 Popular TV'; 
+                } else if (r === 'watchlist') { 
+                    const wl = Store.getWL(); 
+                    document.getElementById('continue-sec').style.display = 'none'; 
+                    document.getElementById('pagination').style.display = 'none'; 
+                    if (wl.length) { 
+                        this.renderGrid(wl); title = '📋 Watchlist'; 
+                    } else { 
+                        document.getElementById('main-grid').innerHTML = '<div class="empty"><i class="fa-solid fa-bookmark"></i><h3>Empty</h3><p>Add items!</p></div>'; title = '📋 Watchlist'; 
+                    } 
+                    this.hideLoading(); 
+                    document.getElementById('sec-title').innerHTML = title; 
+                    return; 
+                } else { 
+                    d = await API.fetch('/trending/all/week', pageParam); 
+                    title = '🔥 Trending'; 
+                }
+                
+                if (d?.results?.length) { 
+                    const items = d.results.map(API.transform); 
+                    if (State.page === 1) this.setHero(items[0]); // Don't shift hero banners while page scanning 
+                    this.renderGrid(items); 
+                    this.setPagination(d.total_pages, State.page); 
+                }
+                document.getElementById('sec-title').innerHTML = title;
+            } catch(e) { 
+                this.showError('Failed to load'); 
+            }
             this.hideLoading();
         },
-        async loadFiltered(){ const g=document.getElementById('genre-filter').value; this.showLoading(); this.renderSkeletons(); try{ const d=await API.fetch('/discover/movie',{with_genres:g}); if(d?.results?.length){ this.renderGrid(d.results.map(API.transform).map(i=>({...i,type:'movie'}))); this.setPagination(d.total_pages,1); } document.getElementById('sec-title').innerHTML='🎯 Filtered'; }catch(e){ this.showError('Filter failed'); } this.hideLoading(); },
+        async loadFiltered(){ 
+            const g = document.getElementById('genre-filter').value; 
+            this.showLoading(); this.renderSkeletons(); 
+            try{ 
+                const d = await API.fetch('/discover/movie', { with_genres: g, page: State.page }); 
+                if(d?.results?.length){ 
+                    this.renderGrid(d.results.map(API.transform).map(i=>({...i,type:'movie'}))); 
+                    this.setPagination(d.total_pages, State.page); 
+                } 
+                document.getElementById('sec-title').innerHTML='🎯 Filtered'; 
+            }catch(e){ this.showError('Filter failed'); } 
+            this.hideLoading(); 
+        },
         setHero(m){ State.hero=m; document.getElementById('hero').style.backgroundImage=`url(${API.img(m.backdrop||m.poster,'original')})`; document.getElementById('hero-title').textContent=m.title; document.getElementById('hero-rating').textContent=m.vote.toFixed(1); document.getElementById('hero-year').textContent=m.year; document.getElementById('hero-type').textContent=m.type==='movie'?'🎬 Movie':'📺 TV'; document.getElementById('hero-desc').textContent=m.overview||'No description'; document.getElementById('hero-play').onclick=()=>Player.launch(m.id,m.type,m.title,1,1,m.poster); const wlb=document.getElementById('hero-wl'); const iw=Store.isWL(m.id,m.type); wlb.innerHTML=iw?'<i class="fa-solid fa-check"></i> In Watchlist':'<i class="fa-solid fa-plus"></i> Watchlist'; wlb.onclick=()=>{ const a=Store.toggleWL({id:m.id,type:m.type,title:m.title,poster:m.poster}); wlb.innerHTML=a?'<i class="fa-solid fa-check"></i> In Watchlist':'<i class="fa-solid fa-plus"></i> Watchlist'; UI.toast(a?'Added!':'Removed',a?'success':'info'); }; },
         renderGrid(items){ const g=document.getElementById('main-grid'); g.innerHTML=items.map(m=>{ const iw=Store.isWL(m.id,m.type); const hp=m.progress>0; return `<div class="card" data-id="${m.id}" data-type="${m.type}" data-title="${m.title.replace(/'/g,"\\'")}" data-s="${m.season||1}" data-e="${m.episode||1}" data-poster="${m.poster||''}" onclick="Player.card(this)" tabindex="0"><div class="card-poster"><img src="${API.img(m.poster)}" alt="${m.title}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22300%22 fill=%22%231a2332%22/>'">${m.type==='movie'?'<div class="card-badge">HD</div>':''}${hp?`<div class="card-progress"><div class="card-progress-fill" style="width:${m.progress}%"></div></div>`:''}</div><button class="card-fav ${iw?'active':''}" onclick="event.stopPropagation();App.toggleFav(${m.id},'${m.type}','${m.title.replace(/'/g,"\\'")}','${m.poster||''}')"><i class="fa-solid fa-bookmark"></i></button><div class="card-body"><div class="card-title">${m.title}</div><div class="card-info"><span>${m.type==='movie'?'Movie':'TV'}</span><span>⭐ ${m.vote.toFixed(1)}</span></div></div></div>`; }).join(''); },
         toggleFav(id,t,title,poster){ const a=Store.toggleWL({id,type:t,title,poster}); const c=document.querySelector(`.card[data-id="${id}"][data-type="${t}"]`); if(c) c.querySelector('.card-fav').classList.toggle('active',a); UI.toast(a?'Added!':'Removed',a?'success':'info'); },
-        renderContinue(){ const s=document.getElementById('continue-sec'); const g=document.getElementById('continue-grid'); const h=Store.getHistory(); if(!h.length){ s.style.display='none'; return; } s.style.display='block'; g.innerHTML=h.map(m=>`<div class="card" data-id="${m.id}" data-type="${m.type}" data-title="${m.title.replace(/'/g,"\\'")}" data-s="${m.season||1}" data-e="${m.episode||1}" data-poster="${m.poster||''}" onclick="Player.card(this)" tabindex="0"><div class="card-poster"><img src="${API.img(m.poster)}" alt="${m.title}" loading="lazy"><div class="card-progress"><div class="card-progress-fill" style="width:${m.progress||30}%"></div></div></div><div class="card-body"><div class="card-title">${m.title}</div><div class="card-info"><span>${m.type==='tv'?`S${m.season}E${m.episode}`:'Movie'}</span><span>${m.progress||30}%</span></div></div></div>`).join(''); },
+        renderContinue(){ const s=document.getElementById('continue-sec'); const g=document.getElementById('continue-grid'); const h=Store.getHistory(); if(!h.length || State.page > 1){ s.style.display='none'; return; } s.style.display='block'; g.innerHTML=h.map(m=>`<div class="card" data-id="${m.id}" data-type="${m.type}" data-title="${m.title.replace(/'/g,"\\'")}" data-s="${m.season||1}" data-e="${m.episode||1}" data-poster="${m.poster||''}" onclick="Player.card(this)" tabindex="0"><div class="card-poster"><img src="${API.img(m.poster)}" alt="${m.title}" loading="lazy"><div class="card-progress"><div class="card-progress-fill" style="width:${m.progress||30}%"></div></div></div><div class="card-body"><div class="card-title">${m.title}</div><div class="card-info"><span>${m.type==='tv'?`S${m.season}E${m.episode}`:'Movie'}</span><span>${m.progress||30}%</span></div></div></div>`).join(''); },
         setPagination(t,c){ State.total=t; State.page=c; const p=document.getElementById('pagination'); if(t<=1){ p.style.display='none'; return; } p.style.display='block'; document.getElementById('prev-pg').disabled=c<=1; document.getElementById('next-pg').disabled=c>=t; document.getElementById('page-info').textContent=`Page ${c}/${t}`; },
         showLoading(){ document.getElementById('loading').style.display='block'; },
         hideLoading(){ document.getElementById('loading').style.display='none'; },
